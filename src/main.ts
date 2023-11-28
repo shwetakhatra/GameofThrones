@@ -8,10 +8,6 @@ import 'bootstrap/dist/css/bootstrap.css'
 const app = createApp(App);
 
 app.use(router);
-
-const axiosInstance = axios.create({
-    withCredentials: true,
-});
-app.config.globalProperties.$axios = { ...axiosInstance }
+app.config.globalProperties.$axios = axios;
 
 app.mount('#app');

@@ -21,7 +21,7 @@
             <tr v-for="row in rows" :key="row.name">
                 <td v-for="column in columns" :key="column.key" scope="row">
                     <template v-if="column.key === 'members'">
-                        {{ row[column.key].map(member => member.name).join(', ') }}
+                        {{ row[column.key].map((member: any) => member.name).join(', ') }}
                     </template>
                     <template v-else-if="column.key === 'house' && row.house">
                         {{ row.house.name }}
@@ -33,10 +33,10 @@
                         {{ row.character.house.name }}
                     </template>
                     <template v-else-if="column.key === 'housename'">
-                        <router-link :to="'/house/'+row.slug" v-tooltip="'House Details'">{{ row.name }}</router-link>
+                        <router-link :to="'/house/'+row.slug">{{ row.name }}</router-link>
                     </template>
                     <template v-else-if="column.key === 'name'">
-                        <router-link :to="'/person/'+row.slug" v-tooltip="'Person Details'">{{ row.name }}</router-link>
+                        <router-link :to="'/person/'+row.slug">{{ row.name }}</router-link>
                     </template>
                     <template v-else>
                         {{ row[column.key] }}
@@ -61,9 +61,9 @@ const emit = defineEmits();
 const searchTerm = ref('');
 const searchPlaceholder = ref('');
 
-const updateSearchTerm = (event) => {
-  searchTerm.value = event.target.value;
-  emit('update:searchTerm', searchTerm.value);
+const updateSearchTerm = (event: Event) => {
+    searchTerm.value = (event.target as HTMLInputElement).value;
+    emit('update:searchTerm', searchTerm.value);
 };
 
 watch(

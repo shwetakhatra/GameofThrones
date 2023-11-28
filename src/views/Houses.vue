@@ -1,17 +1,32 @@
 <template>
-  <div class="container" style="padding: 60px 15px 0;">
-    <Table title="Houses" :columns="houseColumns" v-model:search-term="searchTerm" :rows="filteredHouses"/>
+  <div class="container" style="padding: 60px 15px 0; position: relative;">
+    <div v-if="loading" class="loader-overlay">
+      <div class="spinner-border text-danger" role="status">
+        <span class="sr-only"></span>
+      </div>
+    </div>
+    <div v-else>
+      <Table title="Houses" :columns="houseColumns" v-model:search-term="searchTerm" :rows="filteredHouses"/>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import Table from '../components/Table.vue'
-export default {
+import { defineComponent } from 'vue'
+
+interface House {
+  name: string;
+  members: { name: string }[];
+}
+
+export default defineComponent({
   name: 'Houses',
   data() {
     return {
-      houses: [],
+      houses: [] as House[],
       searchTerm: '',
+      loading: false,
       houseColumns: [
         { key: 'housename', label: 'House Name' },
         { key: 'members', label: 'Members' },
@@ -33,12 +48,15 @@ export default {
   methods: {
     async fetchHouses() {
       try {
-        const response = await this.$axios.get('/api/v1/houses');
+        this.loading = true; 
+        const response = await (this as any).$axios.get('/api/v1/houses');
         this.houses = response.data || [];
       } catch (error) {
         console.error('Error fetching houses:', error);
+      } finally {
+        this.loading = false;
       }
     },
   },
-};
+});
 </script>

@@ -18,10 +18,10 @@
             </div>
             <div class="form-group mt-3">
                 <strong><label class="font-bold">Quotes</label></strong>
-                <template v-for="(quote, index) in personDetails[0].quotes" :key="index" v-if="newQuotes ==''">
+                <template v-for="quote in personDetails[0].quotes" :key="quote" v-if="newQuotes && newQuotes.length === 0">
                     <p class="mt-2"><i>"{{ quote }}"</i></p>
                 </template>
-                <template v-else v-for="(quote, index) in newQuotes">
+                <template v-else v-for="quote in newQuotes" :key="1">
                     <p class="mt-2"><i>"{{ quote.sentence }}"</i></p>
                 </template>
             </div>
@@ -35,14 +35,25 @@
     </div>
   </template>
   
-  <script lang="ts">
-  export default {
+<script lang="ts">
+import { defineComponent } from 'vue'
+
+interface Person {
+    name: string;
+    slug: string;
+    house: {
+        name: string;
+    };
+    quotes: string[];
+}
+
+export default defineComponent({
     name: 'HouseDetails',
     data() {
-      return {
-        personDetails: [],
-        newQuotes: []
-      };
+        return {
+        personDetails: []  as Person[],
+        newQuotes: [] as { sentence: string }[]
+        };
     },
     async mounted() {
         this.fetchPersonDetails();
@@ -51,7 +62,7 @@
         async fetchPersonDetails() {
             const slug = this.$route.params.slug;
             try {
-                const response = await this.$axios.get(`/api/v1/character/${slug}`);
+                const response = await (this as any).$axios.get(`/api/v1/character/${slug}`);
                 this.personDetails = response.data || {};
             } catch (error) {
                 console.error('Error fetching person details:', error);
@@ -60,13 +71,13 @@
         async replaceQuotes(){
             const slug = this.$route.params.slug;
             try {
-                const response = await this.$axios.get(`/api/v1/author/${slug}/5`);
+                const response = await (this as any).$axios.get(`/api/v1/author/${slug}/5`);
                 this.newQuotes = response.data || {};
             } catch (error) {
                 console.error('Error fetching person details:', error);
             }
         }
     }
-  };
-  </script>
+});
+</script>
   

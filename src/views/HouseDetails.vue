@@ -24,22 +24,30 @@
   </template>
   
   <script lang="ts">
-  export default {
+  import { defineComponent } from 'vue'
+
+  interface House {
+    name: string;
+    slug: string;
+    members: { name: string }[];
+  }
+
+  export default defineComponent({
     name: 'HouseDetails',
     data() {
       return {
-        house: [],
+        house: [] as House[],
       };
     },
     async mounted() {
       const slug = this.$route.params.slug;
       try {
-        const response = await this.$axios.get(`/api/v1/house/${slug}`);
+        const response = await (this as any).$axios.get(`/api/v1/house/${slug}`);
         this.house = response.data || {};
       } catch (error) {
         console.error('Error fetching house details:', error);
       }
     },
-  };
+  });
   </script>
   

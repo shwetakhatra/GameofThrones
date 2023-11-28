@@ -1,17 +1,32 @@
 <template>
   <div class="container" style="padding: 60px 15px 0;">
-    <Table title="Persons" :columns="personColumns" v-model:search-term="searchTerm" :rows="filteredPersons"/>
+    <div v-if="loading" class="loader-overlay">
+      <div class="spinner-border text-danger" role="status">
+        <span class="sr-only"></span>
+      </div>
+    </div>
+    <div v-else>
+      <Table title="Persons" :columns="personColumns" v-model:search-term="searchTerm" :rows="filteredPersons"/>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import Table from '../components/Table.vue'
-export default {
+import { defineComponent } from 'vue'
+
+interface Person {
+  name: string;
+  house: string;
+}
+
+export default defineComponent({
   name: 'Persons',
   data() {
     return {
-      persons: [],
+      persons: [] as Person[],
       searchTerm: '',
+      loading: false,
       personColumns: [
         { key: 'name', label: 'Person Name' },
         { key: 'house', label: 'House' },
@@ -33,12 +48,15 @@ export default {
   methods: {
     async fetchPersons() {
       try {
-        const response = await this.$axios.get('/api/v1/characters');
+        this.loading = true;
+        const response = await (this as any).$axios.get('/api/v1/characters');
         this.persons = response.data || [];
       } catch (error) {
         console.error('Error fetching persons:', error);
+      } finally {
+        this.loading = false;
       }
     },
   },
-};
+});
 </script>
